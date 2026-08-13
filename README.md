@@ -106,8 +106,8 @@ SECRET_KEY=YOUR_SECRET_KEY
 ACCESS_TOKEN_EXPIRE_MINUTES=60
 
 AI_API_KEY=YOUR_AI_API_KEY
-AI_API_BASE_URL=https://api.openai.com/v1
-AI_MODEL=gpt-5-mini
+AI_API_BASE_URL=https://ai-api.userfacet.com
+AI_MODEL=gpt-4o-mini
 ```
 
 ### 3. Create the PostgreSQL database
