@@ -117,7 +117,7 @@ Create a PostgreSQL database named:
 ```text
 elibrary
 ```
-My .env contains a local PostgreSQL DATABASE_URL. When running this project on another system, please update DATABASE_URL with your own PostgreSQL database credentials and database name. The rest of the environment variables can be configured according to your setup.
+**Note:** My .env contains a local PostgreSQL DATABASE_URL. When running this project on another system, please update DATABASE_URL with your own PostgreSQL database credentials and database name. The rest of the environment variables can be configured according to your setup.
 
 ### 4. Run database migrations
 
@@ -145,7 +145,8 @@ The API will run at:
 http://127.0.0.1:8000
 ```
 
-Swagger API documentation:
+```markdown
+Interactive API documentation is available through Swagger UI:
 
 ```text
 http://127.0.0.1:8000/docs
@@ -164,6 +165,25 @@ Member
 Email: user@elibrary.local
 Password: User@123
 ```
+## API Testing Flow
+
+The APIs can be tested directly using the Swagger UI available at `/docs`.
+
+A simple testing flow is:
+
+1. Register a new user or use one of the sample accounts.
+2. Login to obtain a JWT access token.
+3. Use the **Authorize** button in Swagger to authenticate protected endpoints.
+4. Browse and search books using the catalog APIs.
+5. Borrow an available book and check the borrowing details.
+6. Return the borrowed book and verify the updated status.
+7. Create a reservation for a book and test cancellation/expiry handling.
+8. Add a review and test updating and deleting it.
+9. Generate an AI summary for a book.
+10. Request the same summary again to verify that the cached summary is returned.
+11. Use an admin account to test admin-only operations and view the dashboard.
+
+The Swagger documentation makes it possible to test the complete workflow without requiring a separate frontend application.
 
 ## API Overview
 
@@ -241,6 +261,32 @@ DELETE /api/v1/reviews/{review_id}
 ```
 
 A user can submit only one review for a particular book.
+
+## Key Workflows
+
+### Borrowing & Return
+
+The borrowing flow checks whether a book is available and whether the user has reached the borrowing limit before creating a borrow record.
+
+When a book is borrowed, its available copy count is reduced and a due date is assigned. On return, the record is updated with the return time and the book becomes available again.
+
+The system also handles overdue books and calculates fines based on the configured fine rate.
+
+### Reservations
+
+Users can reserve books and receive a temporary reservation hold.
+
+Active reservations have an expiry time. Expired reservations are automatically marked as expired when reservation-related APIs are accessed.
+
+Users can also cancel their active reservations.
+
+### AI Summary Caching
+
+Book summaries are generated using an OpenAI-compatible API and stored in the database.
+
+When a summary is requested, the system first checks whether a cached summary already exists. If it does, the stored summary is returned without making another AI API request.
+
+This reduces unnecessary API calls and makes repeated summary requests faster.
 
 ### AI Book Summary
 
@@ -332,6 +378,53 @@ Relationships are maintained using foreign keys and SQLAlchemy relationships.
 Database constraints are also used for important book-copy rules, such as preventing available copies from becoming greater than total copies.
 
 Alembic is used for database schema migrations.
+
+## Design Decisions
+
+A few implementation choices were made to keep the backend simple, modular and easy to extend:
+
+- **Service layer:** Business logic such as borrowing, returns, reservations and AI summaries is kept in separate service modules instead of putting everything inside the API routes.
+- **JWT authentication:** JWT tokens are used to authenticate users and protect private endpoints.
+- **Role-based access:** Admin-only operations are protected using role-based dependencies.
+- **PostgreSQL:** PostgreSQL is used as the main database because the project uses UUIDs, enum types and relational constraints.
+- **Database caching:** Generated AI summaries are stored in the database so repeated requests do not need another AI API call.
+- **Pagination:** Book listing supports pagination to avoid returning large datasets in a single response.
+- **Alembic migrations:** Database schema changes are managed through Alembic migrations instead of manually creating tables.
+- **Validation:** Pydantic schemas and database constraints are used together to validate incoming data and maintain data consistency.
+
+## Architecture Overview
+
+The backend follows a simple layered structure:
+
+```text
+                 Client / Swagger
+                        |
+                        v
+                 FastAPI Routers
+                        |
+                        v
+              Request / Response Schemas
+                        |
+                        v
+                  Service Layer
+                        |
+                        v
+                  SQLAlchemy ORM
+                        |
+                        v
+                    PostgreSQL
+                        |
+                  Alembic Migrations
+
+
+              AI Summary Service
+                        |
+                        v
+             OpenAI-compatible API
+                        |
+                        v
+              Book Summary Cache
+```
 
 ## Validation & Edge Cases
 
