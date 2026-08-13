@@ -101,11 +101,11 @@ pip install -r requirements.txt
 Create a `.env` file in the project root:
 
 ```env
-DATABASE_URL=postgresql://postgres:YOUR_POSTGRES_PASSWORD@localhost:5432/elibrary
-SECRET_KEY=YOUR_SECRET_KEY
+DATABASE_URL=postgresql://postgres:123456@localhost:5432/elibrary
+SECRET_KEY=elibrary-super-secret-key-2026-change-this
 ACCESS_TOKEN_EXPIRE_MINUTES=60
 
-AI_API_KEY=YOUR_AI_API_KEY
+AI_API_KEY=sk-9f4fe53522bd45799d8d19625051d58d
 AI_API_BASE_URL=https://ai-api.userfacet.com
 AI_MODEL=gpt-4o-mini
 ```
