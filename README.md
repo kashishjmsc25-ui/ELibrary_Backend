@@ -117,6 +117,7 @@ Create a PostgreSQL database named:
 ```text
 elibrary
 ```
+My .env contains a local PostgreSQL DATABASE_URL. When running this project on another system, please update DATABASE_URL with your own PostgreSQL database credentials and database name. The rest of the environment variables can be configured according to your setup.
 
 ### 4. Run database migrations
 
