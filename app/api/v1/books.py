@@ -18,7 +18,8 @@ def list_books(search:str|None=None,author_id=None,category_id=None,language:str
     if language: q=q.filter(Book.language.ilike(language))
     if available: q=q.filter(Book.available_copies>0)
     total=q.count(); items=q.order_by(Book.created_at.desc()).offset((page-1)*limit).limit(limit).all()
-    return {'data':items,'pagination':{'page':page,'limit':limit,'total':total,'pages':(total+limit-1)//limit}}
+    books = [BookOut.model_validate(book).model_dump() for book in items]
+    return {'data': books, 'pagination': {'page': page, 'limit': limit, 'total': total, 'pages': (total + limit - 1) // limit}}
 @router.get('/{book_id}',response_model=BookDetail)
 def get_book(book_id,db:Session=Depends(get_db)):
     row=db.query(Book,Author.name.label('author_name'),Category.name.label('category_name'),func.avg(Review.rating).label('average_rating'),func.count(Review.id).label('review_count')).join(Author).join(Category).outerjoin(Review).filter(Book.id==book_id).group_by(Book.id,Author.name,Category.name).first()
