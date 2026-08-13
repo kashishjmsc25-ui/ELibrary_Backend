@@ -502,6 +502,6 @@ docker run --env-file .env -p 8000:8000 elibrary-backend
 
 This project was built from a high-level library management requirement.
 
-The focus was not only on basic CRUD operations, but also on the workflows that make a library backend useful in practice — borrowing and returning books, reservations, reviews, recommendations, admin reporting and AI-assisted summaries.
+The focus was not only on basic CRUD operations, but also on the workflows that would be expected in a practical library system — borrowing and returning books, reservations, reviews, recommendations, and AI-powered summaries.
 
 PostgreSQL is used for local development because the application relies on PostgreSQL-specific features such as UUIDs and enum types.
