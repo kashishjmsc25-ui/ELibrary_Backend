@@ -14,8 +14,8 @@ services:
       - key: AI_API_KEY
         sync: false
       - key: AI_API_BASE_URL
-        value: https://api.openai.com/v1
+        value: https://ai-api.userfacet.com
       - key: AI_MODEL
-        value: gpt-5-mini
+        value: gpt-4o-mini
       - key: CORS_ORIGINS
         value: '*'
